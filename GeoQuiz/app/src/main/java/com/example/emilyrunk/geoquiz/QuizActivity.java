@@ -10,6 +10,7 @@ import android.widget.Toast;
 public class QuizActivity extends AppCompatActivity {
     private Button mTrueButton;
     private Button mFalseButton;
+    private Button mPreviousButton;
     private Button mNextButton;
     private TextView mQuestionTextView;
 
@@ -29,12 +30,13 @@ public class QuizActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
 
+        //Add listener to update question via textview
         mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
         mQuestionTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
-                updateQuestion();                                                                                                                                    
+                updateQuestion();
             }
         });
 
@@ -53,6 +55,21 @@ public class QuizActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 checkAnswer(false);
+            }
+        });
+
+        //Add Previous button
+        mPreviousButton = (Button) findViewById(R.id.previous_button);
+        mPreviousButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                if (mCurrentIndex != 0) {
+                    mCurrentIndex = (mCurrentIndex - 1) % mQuestionBank.length;
+                    updateQuestion();
+                } else {
+                    mCurrentIndex = mQuestionBank.length -1;
+                    updateQuestion();
+                }
             }
         });
 
