@@ -8,14 +8,18 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 public class QuizActivity extends AppCompatActivity {
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
+    private static final String QUESTIONS_STATUS = "Questions Status";
 
     private Button mTrueButton;
     private Button mFalseButton;
     private Button mNextButton;
     private TextView mQuestionTextView;
+    private ArrayList<Integer> mQuestionsStatus;
 
     private Question[] mQuestionBank = new Question[] {
             new Question(R.string.question_africa, false),
@@ -26,6 +30,8 @@ public class QuizActivity extends AppCompatActivity {
             new Question(R.string.question_oceans, true),
     };
 
+
+
     private int mCurrentIndex = 0;
 
     @Override
@@ -33,11 +39,23 @@ public class QuizActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate(Bundle) called");
         setContentView(R.layout.activity_quiz);
+        mQuestionsStatus = new ArrayList<>();
+
+        for (int i = 0; i < mQuestionBank.length; i++) {
+            mQuestionsStatus.add(mQuestionBank[i].getQuestionStatus());
+        }
 
 
         //if there is a previously savedInstanceState, then set mCurrentIndex to saved value
         if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+            mQuestionsStatus = savedInstanceState.getIntegerArrayList(QUESTIONS_STATUS);
+        }
+
+        if (mQuestionBank[mCurrentIndex].getHasBeenAnswered() == true) {
+            //Set Visibility of Buttons to invisible once answered
+            mFalseButton.setVisibility(View.INVISIBLE);
+            mTrueButton.setVisibility(View.INVISIBLE);
         }
 
         mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
@@ -48,7 +66,11 @@ public class QuizActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 checkAnswer(true);
+                //Set Visibility of Buttons to invisible once answered
+                mFalseButton.setVisibility(View.INVISIBLE);
+                mTrueButton.setVisibility(View.INVISIBLE);
             }
+
         });
 
         mFalseButton = (Button) findViewById(R.id.false_button);
@@ -57,14 +79,21 @@ public class QuizActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 checkAnswer(false);
+                //Set Visibility of Buttons to invisible once answered
+                mFalseButton.setVisibility(View.INVISIBLE);
+                mTrueButton.setVisibility(View.INVISIBLE);
             }
+
         });
+
 
         mNextButton = (Button) findViewById(R.id.next_button);
         mNextButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
+                mFalseButton.setVisibility(View.INVISIBLE);
+                mTrueButton.setVisibility(View.INVISIBLE);
                 updateQuestion();
             }
         });
@@ -96,6 +125,7 @@ public class QuizActivity extends AppCompatActivity {
         super.onSaveInstanceState(savedInstanceState);
         Log.i(TAG, "onSaveInstanceState");
         savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
+        savedInstanceState.putIntegerArrayList(QUESTIONS_STATUS, mQuestionsStatus);
     }
 
     @Override
@@ -111,17 +141,58 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void updateQuestion() {
-        int question = mQuestionBank[mCurrentIndex].getTextResId();
-        mQuestionTextView.setText(question);
+
+        mQuestionsStatus.clear();
+        for (int i = 0; i < mQuestionBank.length; i++) {
+            mQuestionsStatus.add(mQuestionBank[i].getQuestionStatus());
+        }
+        Log.d(TAG, mQuestionsStatus.toString());
+
+        if (mQuestionBank[mCurrentIndex].getHasBeenAnswered() == true) {
+            //Set Visibility of Buttons to invisible once answered
+            mFalseButton.setVisibility(View.INVISIBLE);
+            mTrueButton.setVisibility(View.INVISIBLE);
+        } else {
+            mFalseButton.setVisibility(View.VISIBLE);
+            mTrueButton.setVisibility(View.VISIBLE);
+        }
+
+        if (mQuestionsStatus.contains(0)) {
+            int question = mQuestionBank[mCurrentIndex].getTextResId();
+            mQuestionTextView.setText(question);
+        } else {
+            double correct = 0;
+            double incorrect = 0;
+            for (int i = 0; i<mQuestionsStatus.size(); i++ ) {
+                if (mQuestionsStatus.get(i) == 1) {
+                    correct += 1;
+                }
+                if (mQuestionsStatus.get(i) == 2) {
+                    incorrect += 1;
+                }
+            }
+            double numberOfQuestions = mQuestionBank.length;
+            double finalScore = (correct/numberOfQuestions) * 100;
+            Log.d(TAG, "correct: " + correct +"\nnumberOfQuestions: " + numberOfQuestions + "\nfinalscore: " + finalScore);
+
+            Toast.makeText(this, "You got a score of: " + finalScore +"%!",Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void checkAnswer(boolean userPressedTrue) {
         boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
+        mQuestionBank[mCurrentIndex].setHasBeenAnswered(true);
 
         int messageResId = 0;
+
+        //0 = unanswered
+        //1 = correct
+        //2 = incorrect
         if (userPressedTrue == answerIsTrue) {
+            mQuestionBank[mCurrentIndex].setQuestionStatus(1);
             messageResId = R.string.correct_toast;
         } else {
+            mQuestionBank[mCurrentIndex].setQuestionStatus(2);
             messageResId = R.string.incorrect_toast;
         }
 
