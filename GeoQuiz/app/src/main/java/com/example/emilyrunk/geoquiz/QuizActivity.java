@@ -13,6 +13,7 @@ import android.widget.Toast;
 public class QuizActivity extends AppCompatActivity {
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
+    private static final String USER_CHEATED = "User Cheated";
     private static final int REQUEST_CODE_CHEAT = 0;
 
     private Button mTrueButton;
@@ -43,6 +44,7 @@ public class QuizActivity extends AppCompatActivity {
         //if there is a previously savedInstanceState, then set mCurrentIndex to saved value
         if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+            mIsCheater = savedInstanceState.getBoolean(USER_CHEATED, mIsCheater);
         }
 
         mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
@@ -128,6 +130,7 @@ public class QuizActivity extends AppCompatActivity {
         super.onSaveInstanceState(savedInstanceState);
         Log.i(TAG, "onSaveInstanceState");
         savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
+        savedInstanceState.putBoolean(USER_CHEATED, mIsCheater);
     }
 
     @Override
