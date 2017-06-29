@@ -78,10 +78,11 @@ public class CrimeListFragment extends Fragment {
         }
 
         @Override
+        //pressing on list item should start an instance of CrimePagerActivity
         public void onClick(View view) {
             //Crime id is stashed inside this intent that belongs to CrimeActivity - but now needs
             // to be used by CrimeFragment
-            Intent intent = CrimeActivity.newIntent(getActivity(), mCrime.getId());
+            Intent intent = CrimePagerActivity.newIntent(getActivity(), mCrime.getId());
             startActivity(intent);
         }
     }
