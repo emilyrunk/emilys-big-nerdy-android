@@ -67,8 +67,7 @@ public class TimePickerFragment extends DialogFragment {
                         calendar.set(Calendar.HOUR_OF_DAY, hour);
                         calendar.set(Calendar.MINUTE, minute);
                         Date time = calendar.getTime();
-                        sendResult(Activity.RESULT_OK, date);
-
+                        sendResult(Activity.RESULT_OK, time);
                     }
 
                 })

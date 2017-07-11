@@ -85,7 +85,7 @@ public class CrimeFragment extends Fragment {
         });
 
         mTimeButton = (Button) v.findViewById(R.id.crime_date);
-        updateDate();
+        mTimeButton.setText(mCrime.getDate().toString());
         //Set onClickListener that shows DatePickerFragment when clicked:
         mTimeButton.setOnClickListener(new View.OnClickListener() {
             @Override
