@@ -10,7 +10,7 @@ import android.support.v7.app.AppCompatActivity;
  */
 
 public abstract class SingleFragmentActivity extends AppCompatActivity {
-    //SingleFragmentActivity is used by CriminalListActivity and CrimeActivity
+    //SingleFragmentActivity is used by CrimeListActivity and CrimeActivity
     //
 
     protected abstract Fragment createFragment();
