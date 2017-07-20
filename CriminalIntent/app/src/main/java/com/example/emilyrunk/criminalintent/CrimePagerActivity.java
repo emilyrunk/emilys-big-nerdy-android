@@ -18,6 +18,7 @@ import java.util.UUID;
  */
 
 public class CrimePagerActivity extends AppCompatActivity {
+    //CrimePagerActivity holds the CrimeFragment (Crime Details)
     private static final String EXTRA_CRIME_ID = "com.example.emilyrunk.criminalintent.crime_id";
 
     private ViewPager mViewPager;
