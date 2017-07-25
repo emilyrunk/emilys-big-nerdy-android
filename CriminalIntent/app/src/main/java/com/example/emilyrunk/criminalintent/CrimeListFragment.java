@@ -135,6 +135,7 @@ public class CrimeListFragment extends Fragment {
     }
 
     private class CrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        //CrimeHolder is an RecyclierView that inflates with the list of crimes
 
         private Crime mCrime;
         private TextView mTitleTextView;
