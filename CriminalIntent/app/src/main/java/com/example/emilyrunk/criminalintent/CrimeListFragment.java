@@ -23,6 +23,7 @@ import java.util.List;
  */
 
 public class CrimeListFragment extends Fragment {
+    //CrimeListFragment holds the list of different Crime Items
     private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
 
     private RecyclerView mCrimeRecyclerView;
@@ -125,6 +126,7 @@ public class CrimeListFragment extends Fragment {
             mAdapter = new CrimeAdapter(crimes);
             mCrimeRecyclerView.setAdapter(mAdapter);
         } else {
+            mAdapter.setCrimes(crimes);
             mAdapter.notifyDataSetChanged();
         }
 
@@ -165,6 +167,7 @@ public class CrimeListFragment extends Fragment {
     }
 
     private class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder> {
+        //Recycler view that inflates fragment with individual Crime objects
 
         private List<Crime> mCrimes;
 
@@ -188,6 +191,10 @@ public class CrimeListFragment extends Fragment {
         @Override
         public int getItemCount() {
             return mCrimes.size();
+        }
+
+        public void setCrimes (List<Crime> crimes) {
+            mCrimes = crimes;
         }
     }
 }

@@ -26,6 +26,8 @@ import java.util.UUID;
 
 public class CrimeFragment extends Fragment {
 
+    // Crime Fragment is the screen where you enter in all the details
+
     private static final String ARG_CRIME_ID = "crime_id";
     private static final String DIALOG_DATE = "DialogDate";
 
@@ -56,6 +58,13 @@ public class CrimeFragment extends Fragment {
 //                .getSerializableExtra(CrimeActivity.EXTRA_CRIME_ID);
         UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
         mCrime = CrimeLab.get(getActivity()).getCrime(crimeId);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        //This updates CrimeLab's copy of Crime when on Pause
+        CrimeLab.get(getActivity()).updateCrime(mCrime);
     }
 
     @Override

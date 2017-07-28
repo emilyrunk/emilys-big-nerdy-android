@@ -20,6 +20,7 @@ public class CrimeBaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        //SQLite db created here
         db.execSQL("create table " + CrimeTable.NAME + "(" +
                 " _id integer primary key autoincrement, " +
                 CrimeTable.Cols.UUID + ", " +
