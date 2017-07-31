@@ -60,6 +60,9 @@ public class CrimeLab {
 //                mCrimes.remove(crime);
 //            }mDatabase.delete()
 //        }
+        String uuidString = getCrime(id).getId().toString();
+        mDatabase.delete(CrimeTable.NAME, CrimeTable.Cols.UUID + " =? ", new String[] {uuidString});
+
 
     }
 
