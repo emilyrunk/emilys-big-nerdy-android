@@ -14,6 +14,7 @@ import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.ShareCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
@@ -124,14 +125,22 @@ public class CrimeFragment extends Fragment {
         mReportButton = (Button) v.findViewById(R.id.crime_report);
         mReportButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                //Create an intent that sends a report of the crime via email?
-                Intent i = new Intent(Intent.ACTION_SEND);
-                i.setType("text/plain");
-                i.putExtra(Intent.EXTRA_TEXT, getCrimeReport()); //The body of the email
-                i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.crime_report_subject)); //The subject in the email
-                //createChooser() makes user choose an activity/app each time you send something
-                i.createChooser(i, getString(R.string.send_report));
-                startActivity(i);
+                //Use ShareCompat.IntentBuilder
+                ShareCompat.IntentBuilder.from(getActivity())
+                        .setType("text/plain")
+                        .setText(getCrimeReport())
+                        .setSubject(getString(R.string.crime_report_subject))
+                        .setChooserTitle(getString(R.string.send_report))
+                        .startChooser();
+
+//                //Create an intent that sends a report of the crime via email?
+//                Intent i = new Intent(Intent.ACTION_SEND);
+//                i.setType("text/plain");
+//                i.putExtra(Intent.EXTRA_TEXT, getCrimeReport()); //The body of the email
+//                i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.crime_report_subject)); //The subject in the email
+//                //createChooser() makes user choose an activity/app each time you send something
+//                i.createChooser(i, getString(R.string.send_report));
+//                startActivity(i);
             }
         });
 
