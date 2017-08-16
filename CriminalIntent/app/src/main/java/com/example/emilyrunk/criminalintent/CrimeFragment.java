@@ -10,14 +10,15 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ShareCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,9 @@ import android.widget.EditText;
 import java.util.Date;
 import java.util.UUID;
 
+import static android.provider.ContactsContract.CommonDataKinds;
+import static android.provider.ContactsContract.Contacts;
+
 public class CrimeFragment extends Fragment {
 
     // Crime Fragment is the screen where you enter in all the details
@@ -39,12 +43,17 @@ public class CrimeFragment extends Fragment {
 
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_CONTACT = 1;
+    private static final int REQUEST_READ_CONTACT_PERMISSION = 3;
+
+    private static final String[] READ_CONTACT_PERMISSION = new String[] {
+            android.Manifest.permission.READ_CONTACTS};
 
     private Crime mCrime;
     private EditText mTitleField;
     private Button mDateButton;
     private CheckBox mSolvedCheckBox;
     private Button mSuspectButton;
+    private Button mCallSuspectButton;
     private Button mReportButton;
 
     public static CrimeFragment newInstance(UUID crimeId) {
@@ -145,8 +154,51 @@ public class CrimeFragment extends Fragment {
         });
 
 
+        //Pressing this button should dial the suspect when presesd
+        mCallSuspectButton = (Button) v.findViewById(R.id.call_suspect);
+
+        mCallSuspectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!hasReadContactsPermission()) {
+                    requestPermissions(READ_CONTACT_PERMISSION, REQUEST_READ_CONTACT_PERMISSION);
+                } else {
+                    Uri phoneURI = CommonDataKinds.Phone.CONTENT_URI;
+                    String[] queryFields = new String[]{CommonDataKinds.Phone.NUMBER};
+                    String where = CommonDataKinds.Phone.DISPLAY_NAME + " = ?";
+                    String[] selectionArgs = new String[]{mCrime.getSuspect()};
+                    Cursor c = getActivity().getContentResolver().query(phoneURI, queryFields, where, selectionArgs, null);
+                    int indexNumber = c.getColumnIndex(CommonDataKinds.Phone.NUMBER);
+                    Log.d("phoneURI", phoneURI.toString());
+                    Log.d("queryFields", queryFields[0]);
+                    Log.d("where", where);
+                    Log.d("selectionArgs", selectionArgs[0]);
+
+
+
+//                    try {
+//                        if (c.getCount() == 0) {
+//                            return;
+//                        }
+                        c.moveToFirst();
+                        String phoneNumber = c.getString(indexNumber);
+                        Log.d("phoneNumber", phoneNumber);
+                        Uri call = Uri.parse("tel:" + phoneNumber);
+                        Log.d("URI call", "tel:" + phoneNumber);
+                        Intent callSuspect = new Intent(Intent.ACTION_DIAL);
+                        callSuspect.setData(call);
+                        callSuspect.createChooser(callSuspect, "Call Number");
+                        startActivity(callSuspect);
+//                    } finally {
+//                        c.close();
+//                    }
+                }
+            }
+        });
+
+
         //Using pickContent more than once so it will be outside
-        final Intent pickContact = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+        final Intent pickContact = new Intent(Intent.ACTION_PICK, Contacts.CONTENT_URI);
 
         mSuspectButton = (Button) v.findViewById(R.id.crime_suspect);
         mSuspectButton.setOnClickListener(new View.OnClickListener() {
@@ -185,7 +237,7 @@ public class CrimeFragment extends Fragment {
             Uri contactUri = data.getData();
             //Specify which fields you want your query to return values for
             String[] queryFields = new String[] {
-                    ContactsContract.Contacts.DISPLAY_NAME
+                    Contacts.DISPLAY_NAME
             };
             //Perform your query - the contactUri is like a "where" clause here
             Cursor c = getActivity().getContentResolver().query(contactUri, queryFields, null, null, null);
@@ -205,6 +257,7 @@ public class CrimeFragment extends Fragment {
             } finally {
                 c.close();
             }
+
         }
     }
 
@@ -237,5 +290,11 @@ public class CrimeFragment extends Fragment {
         String report = getString(R.string.crime_report, mCrime.getTitle(), dateString, solvedString, suspect);
 
         return report;
+    }
+
+    //Permission check
+    private boolean hasReadContactsPermission() {
+        int result = ContextCompat.checkSelfPermission(getActivity(), READ_CONTACT_PERMISSION[0]);
+        return result == PackageManager.PERMISSION_GRANTED;
     }
 }
