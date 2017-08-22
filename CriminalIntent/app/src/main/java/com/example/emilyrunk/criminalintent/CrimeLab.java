@@ -9,6 +9,7 @@ import com.example.emilyrunk.criminalintent.database.CrimeBaseHelper;
 import com.example.emilyrunk.criminalintent.database.CrimeCursorWrapper;
 import com.example.emilyrunk.criminalintent.database.CrimeDbSchema.CrimeTable;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -95,6 +96,13 @@ public class CrimeLab {
         } finally {
             cursor.close();
         }
+    }
+
+    //Get photo file by getting photo file name
+    //Returns photo file
+    public File getPhotoFile(Crime crime) {
+        File filesDir = mContext.getFilesDir();
+        return new File(filesDir, crime.getPhotoFilename());
     }
 
     //Update rows in the database:
