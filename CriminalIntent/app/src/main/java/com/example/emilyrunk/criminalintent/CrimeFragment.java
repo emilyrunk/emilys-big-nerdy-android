@@ -42,6 +42,7 @@ public class CrimeFragment extends Fragment {
     // Crime Fragment is the screen where you enter in all the details
     private static final String ARG_CRIME_ID = "crime_id";
     private static final String DIALOG_DATE = "DialogDate";
+    private static final String DIALOG_PHOTO = "DialogPhoto";
 
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_CONTACT = 1;
@@ -109,7 +110,7 @@ public class CrimeFragment extends Fragment {
                 //Space also left blank intentionally
             }
         });
-
+        //---------------------DATE PICKER-----------------------
         mDateButton = (Button) v.findViewById(R.id.crime_date);
         updateDate();
         //Set onClickListener that shows DatePickerFragment when clicked:
@@ -123,6 +124,10 @@ public class CrimeFragment extends Fragment {
             }
         });
 
+
+
+
+        //--------------------SOLVED CHECKBOX---------------------
         mSolvedCheckBox = (CheckBox) v.findViewById(R.id.crime_solved);
         mSolvedCheckBox.setChecked(mCrime.isSolved());
         mSolvedCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -132,7 +137,7 @@ public class CrimeFragment extends Fragment {
             }
         });
 
-        ////---------------------SEND A REPORT OF THE CRIME-----------------------
+        ////---------------------REPORT-----------------------
         //Click Button to send an email of the report to someone
         mReportButton = (Button) v.findViewById(R.id.crime_report);
         mReportButton.setOnClickListener(new View.OnClickListener() {
@@ -152,7 +157,7 @@ public class CrimeFragment extends Fragment {
         //Using pickContent more than once so it will be outside
         final Intent pickContact = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
 
-        //---------------------CHOOSE A SUSPECT-----------------------
+        //---------------------CHOOSE SUSPECT-----------------------
         //Click Button to choose a suspect from contacts app
         mSuspectButton = (Button) v.findViewById(R.id.crime_suspect);
         mSuspectButton.setOnClickListener(new View.OnClickListener() {
@@ -175,7 +180,7 @@ public class CrimeFragment extends Fragment {
             mSuspectButton.setEnabled(false);
         }
 
-        //---------------------TAKE A PHOTO OF THE CRIME-----------------------
+        //---------------------TAKE PHOTO-----------------------
         //Click Button to bring up Camera App to take photo
         mPhotoButton = (ImageButton) v.findViewById(R.id.crime_camera);
         final Intent captureImage = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -206,10 +211,27 @@ public class CrimeFragment extends Fragment {
             }
         });
 
+        //-----------------------Image ZOOM IN--------------------
         mPhotoView = (ImageView) v.findViewById(R.id.crime_photo);
         updatePhotoView();
+        mPhotoView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if (mPhotoFile == null || !mPhotoFile.exists()) {
+                    return;
+                }
+                FragmentManager manager = getFragmentManager();
+                PhotoZoomFragment dialog = PhotoZoomFragment.newInstance(mPhotoFile.getPath());
+                dialog.setTargetFragment(CrimeFragment.this, REQUEST_PHOTO);
+                dialog.show(manager, DIALOG_PHOTO);
+
+            }
+        });
 
         return v;
+
+
     }
 
     @Override
