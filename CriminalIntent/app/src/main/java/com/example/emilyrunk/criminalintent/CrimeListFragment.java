@@ -35,9 +35,12 @@ public class CrimeListFragment extends Fragment {
      * Required interface for hosting activities
      */
 
+
     public interface Callbacks {
         void onCrimeSelected(Crime crime);
     }
+
+    //When CrimeListFragment is attached to a hosting activity
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -81,6 +84,7 @@ public class CrimeListFragment extends Fragment {
         outState.putBoolean(SAVED_SUBTITLE_VISIBLE, mSubtitleVisible);
     }
 
+    //When CrimeListFragment is detached to a hosting activity
     @Override
     public void onDetach() {
         super.onDetach();
@@ -137,7 +141,7 @@ public class CrimeListFragment extends Fragment {
         activity.getSupportActionBar().setSubtitle(subtitle);
     }
 
-    private void updateUI() {
+    public void updateUI() {
         CrimeLab crimeLab = CrimeLab.get(getActivity());
         List<Crime> crimes = crimeLab.getCrimes();
 
@@ -179,8 +183,6 @@ public class CrimeListFragment extends Fragment {
         @Override
         //pressing on list item should start an instance of CrimePagerActivity
         public void onClick(View view) {
-            //Crime id is stashed inside this intent that belongs to CrimeActivity - but now needs
-            // to be used by CrimeFragment
             mCallbacks.onCrimeSelected(mCrime);
         }
     }
