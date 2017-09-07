@@ -39,6 +39,11 @@ public class CrimeListFragment extends Fragment {
         void onCrimeSelected(Crime crime);
     }
 
+    public interface ItemTouchHelper {
+        void onItemDismiss(int position);
+    }
+
+
     //When CrimeListFragment is attached to a hosting activity
     @Override
     public void onAttach(Context context) {
