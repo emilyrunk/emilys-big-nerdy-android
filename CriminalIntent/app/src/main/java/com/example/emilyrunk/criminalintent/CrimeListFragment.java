@@ -35,7 +35,6 @@ public class CrimeListFragment extends Fragment {
      * Required interface for hosting activities
      */
 
-
     public interface Callbacks {
         void onCrimeSelected(Crime crime);
     }
